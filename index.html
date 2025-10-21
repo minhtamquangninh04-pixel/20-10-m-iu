@@ -2,12 +2,12 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>3D Heart Animation 💖</title>
+  <title>💖 3D Heart Animation 💖</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
-      background: radial-gradient(circle at center, #3a0030, #1a0015);
+      background: radial-gradient(circle at center, #300020, #100010);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -40,54 +40,61 @@
   </style>
 </head>
 <body>
-  <div class="message">💖 Chúc mẹ iu 20/10 thật khỏe mạnh, xinh đẹp, vui vẻ!! mãi iu >< 💖</div>
+  <div class="message">💖 Chúc mẹ iu 20/10 thật khỏe mạnh, xinh đẹp, vui vẻ!! Mãi iu >< 💖</div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
-    // Tạo scene, camera, renderer
+    // --- TẠO SCENE ---
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // Tạo geometry hình trái tim bằng công thức tham số toán học
+    // --- TẠO HÌNH TRÁI TIM 3D ---
     const heartGeometry = new THREE.BufferGeometry();
     const points = [];
-    const particleCount = 2500;
+    const particleCount = 6000; // nhiều chấm hơn
     for (let i = 0; i < particleCount; i++) {
       const t = Math.random() * Math.PI * 2;
-      const x = 16 * Math.pow(Math.sin(t), 3);
-      const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
-      const z = (Math.random() - 0.5) * 8;
+      const r = (Math.random() * 0.3) + 0.7; // độ dày
+      const x = 16 * Math.pow(Math.sin(t), 3) * r;
+      const y = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * r;
+      const z = (Math.random() - 0.5) * 10; // độ sâu để tạo 3D
       points.push(new THREE.Vector3(x, y, z));
     }
     heartGeometry.setFromPoints(points);
 
-    // Tạo vật liệu cho các hạt nhỏ
+    // --- VẬT LIỆU LUNG LINH ---
     const material = new THREE.PointsMaterial({
       color: 0xff66cc,
-      size: 0.4,
+      size: 0.35,
       transparent: true,
-      opacity: 0.9
+      opacity: 0.9,
+      blending: THREE.AdditiveBlending,
     });
 
-    // Gom lại thành 1 mesh Points
+    // --- THÊM HẠT VÀO SCENE ---
     const heart = new THREE.Points(heartGeometry, material);
     scene.add(heart);
 
+    // --- ÁNH SÁNG NHẸ ĐỂ TẠO CHIỀU SÂU ---
+    const light = new THREE.PointLight(0xff66cc, 1, 100);
+    light.position.set(10, 10, 30);
+    scene.add(light);
+
     camera.position.z = 40;
 
-    // Animation xoay nhẹ
+    // --- ANIMATION (xoay ngang, không lên xuống) ---
     function animate() {
       requestAnimationFrame(animate);
-      heart.rotation.y += 0.01;
-      heart.rotation.x += 0.003;
+      heart.rotation.y += 0.01; // xoay ngang
+      heart.rotation.x = 0.15;  // chỉ nghiêng nhẹ
       renderer.render(scene, camera);
     }
     animate();
 
-    // Responsive
+    // --- RESPONSIVE ---
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
